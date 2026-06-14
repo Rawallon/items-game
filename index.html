@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Items Battle</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New',monospace;min-height:100vh;display:flex;justify-content:center}
+#game{width:100%;max-width:480px;background:#0d0d23;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.hidden{display:none!important}
+
+/* START */
+#start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;gap:20px}
+#start-screen h1{font-size:20px;color:#ffcc00;text-shadow:0 0 30px #ffaa0088;line-height:1.5}
+#start-screen p{font-size:7px;color:#a0a0ff;line-height:2.2;max-width:300px}
+.big-btn{font-family:'Press Start 2P',monospace;cursor:pointer;border-radius:4px;padding:14px 28px;font-size:10px;border:3px solid}
+#start-btn{background:#3a1a6a;border-color:#9a44ff;color:#cc88ff}
+#start-btn:hover{background:#5a2a9a}
+#restart-btn,#restart-btn2{background:#1a1a3a;border-color:#6666aa;color:#a0a0ff}
+
+/* TOP BAR */
+#top-bar{background:#14143a;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #2a2a5e;flex-shrink:0}
+#round-info{font-size:8px;color:#ffcc00}
+#round-dots{display:flex;gap:5px;align-items:center}
+.round-dot{width:10px;height:10px;border-radius:50%;background:#2a2a5e;border:2px solid #4a4aae;flex-shrink:0}
+.round-dot.done{background:#3a7a3a;border-color:#5acc5a}
+.round-dot.current{background:#aa8800;border-color:#ffcc00}
+#coins-display{font-size:10px;color:#ffd700}
+
+/* GRIDS */
+.section-label{font-size:6px;padding:3px 8px;letter-spacing:1px}
+.enemy-label-bar{background:#2a1020;color:#ff8888}
+.player-label-bar{background:#101230;color:#8888ff}
+.grid-wrap{padding:6px 8px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;border-radius:4px;padding:6px}
+.enemy-grid-style{background:#1a0d16;border:3px solid #7a2a3a}
+.player-grid-style{background:#0d0d1e;border:3px solid #3a3a8e}
+.grid-cell{aspect-ratio:1;background:#1e1e3a;border:1px solid #2a2a5a;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:default;position:relative;transition:background 0.1s,border-color 0.15s;user-select:none}
+.grid-cell.has-item{background:#22284a;border-color:#4a5088}
+.grid-cell.can-drop{background:#1a3a2a;border-color:#3a8a5a;cursor:pointer}
+.grid-cell.drag-over{background:#2a5a3a!important;border-color:#5aaa6a!important}
+.grid-cell.shop-drag-src{opacity:0.5}
+.item-emoji{pointer-events:none;line-height:1}
+.timer-bar{position:absolute;bottom:1px;left:2px;right:2px;height:3px;background:#111130;border-radius:2px}
+.timer-fill{height:100%;background:#44aaff;border-radius:2px;transition:width 0.1s linear}
+.timer-fill.ready{background:#44ffaa}
+
+/* ARENA */
+#arena{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#090918;border-top:1px solid #1a1a3a;border-bottom:1px solid #1a1a3a;flex-shrink:0;min-height:130px;position:relative}
+.fighter{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.fighter-name{font-size:6px;color:#b0b0ff;text-align:center;max-width:110px;word-break:break-word;line-height:1.4}
+.fighter-emoji{font-size:46px;line-height:1}
+.hp-wrap{width:110px}
+.hp-bar-bg{height:10px;background:#1a1a3a;border:1px solid #3a3a6e;border-radius:5px;overflow:hidden}
+.hp-bar-fill{height:100%;background:linear-gradient(to right,#cc2222,#ff5555);transition:width 0.25s}
+.hp-num{font-size:8px;color:#ff8888;text-align:center;margin-top:2px}
+#battle-mid{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:60px}
+#battle-timer{font-size:9px;color:#7070aa}
+#round-banner{font-size:6px;color:#9090cc}
+.ctrl-row{display:flex;gap:4px}
+.ctrl-btn{font-family:'Press Start 2P',monospace;background:#1a1a3a;border:2px solid #3a3a6e;color:#fff;font-size:10px;width:30px;height:30px;cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.ctrl-btn:hover{background:#2a2a5a}
+
+/* ENEMY PREVIEW */
+#enemy-preview-bar{display:flex;align-items:center;justify-content:center;gap:8px;background:#1a0d16;padding:5px 10px;font-size:7px;color:#ff9999;border-bottom:1px solid #3a1a2a}
+
+/* SHOP */
+#shop-wrap{flex:1;display:flex;flex-direction:column;background:#0a0a1a;border-top:2px solid #2a2a5e;padding:8px}
+#shop-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+#shop-title{font-size:8px;color:#a0a0ff}
+#reroll-btn{font-family:'Press Start 2P',monospace;background:#1a1a3a;border:2px solid #3a3a7e;color:#8888dd;font-size:6px;padding:5px 8px;cursor:pointer;border-radius:3px}
+#reroll-btn:hover{background:#2a2a5a}
+#shop-slots{display:flex;gap:6px;margin-bottom:10px}
+.shop-slot{flex:1;background:#141430;border:2px solid #2a2a5e;border-radius:5px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:grab;min-height:95px;position:relative;transition:border-color 0.1s}
+.shop-slot:hover:not(.empty){border-color:#6666aa;background:#1e1e44}
+.shop-slot.empty{opacity:0.35;cursor:default}
+.shop-slot.dragging{opacity:0.4;cursor:grabbing}
+.rarity-tag{position:absolute;top:2px;left:2px;font-size:5px;padding:1px 4px;border-radius:2px}
+.r-common{background:#444;color:#ccc}
+.r-uncommon{background:#1a4a1a;color:#7eff7e}
+.r-rare{background:#1a1a5a;color:#7eaeff}
+.shop-icon{font-size:26px;line-height:1}
+.shop-name{font-size:5px;color:#c0c0ff;text-align:center;line-height:1.5}
+.shop-cost{font-size:7px;color:#ffd700}
+.cant-afford{opacity:0.45!important}
+#battle-btn{width:100%;font-family:'Press Start 2P',monospace;background:#3a1a0a;border:3px solid #ffaa00;color:#ffcc44;font-size:10px;padding:12px;cursor:pointer;border-radius:4px;letter-spacing:1px}
+#battle-btn:hover{background:#5a2a0a}
+#sell-hint{font-size:5px;color:#555577;text-align:center;margin-bottom:6px}
+
+/* RESULT OVERLAY */
+#result-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;justify-content:center;align-items:center;z-index:100}
+#result-modal{background:#14143a;border:3px solid #5a5aae;border-radius:8px;padding:24px 20px;max-width:300px;width:90%;text-align:center;display:flex;flex-direction:column;gap:12px}
+#result-title{font-size:18px}
+#result-title.win{color:#ffcc00}
+#result-title.lose{color:#ff4444}
+#result-sub{font-size:8px;color:#a0a0ff;line-height:2}
+#result-stats{font-size:7px;color:#8888bb;line-height:2}
+#next-btn{font-family:'Press Start 2P',monospace;background:#1a3a1a;border:3px solid #4a9a4a;color:#88ee88;font-size:9px;padding:11px;cursor:pointer;border-radius:4px}
+#next-btn:hover{background:#2a5a2a}
+
+/* GAMEOVER / WIN */
+#gameover-screen,#win-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;gap:18px}
+#gameover-screen h1{font-size:18px;color:#ff4444}
+#win-screen h1{font-size:18px;color:#ffcc00}
+#gameover-screen p,#win-screen p{font-size:8px;color:#a0a0ff;line-height:2}
+
+/* TOOLTIP */
+#tooltip{position:fixed;background:#10103a;border:2px solid #5a5aae;border-radius:5px;padding:10px;max-width:190px;z-index:300;pointer-events:none}
+.tip-name{font-size:8px;color:#ffcc44;margin-bottom:6px}
+.tip-desc{font-size:6px;color:#c0c0ff;line-height:1.8}
+.tip-type{font-size:5px;color:#7090aa;margin-top:5px}
+
+/* DAMAGE NUMBERS */
+.dmg-num{position:fixed;font-family:'Press Start 2P',monospace;font-size:13px;pointer-events:none;z-index:200;animation:floatUp 0.9s ease-out forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-35px) scale(1.15)}100%{opacity:0;transform:translateY(-60px) scale(0.8)}}
+
+/* SHAKE */
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.shake{animation:shake 0.2s ease}
+
+/* GLOW READY */
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 4px #44ffaa66}50%{box-shadow:0 0 12px #44ffaacc}}
+.item-ready{animation:pulseGlow 0.5s ease infinite}
+
+/* SELL ZONE */
+#sell-zone{border:2px dashed #553333;border-radius:4px;padding:6px;text-align:center;font-size:6px;color:#885555;margin-bottom:6px;transition:background 0.1s}
+#sell-zone.drag-over{background:#3a1a1a;border-color:#aa5555;color:#ff8888}
+</style>
+</head>
+<body>
+<div id="game">
+
+<!-- START SCREEN -->
+<div id="start-screen">
+  <div style="font-size:56px">⚔️</div>
+  <h1>ITEMS<br>BATTLE</h1>
+  <p>Compre itens, monte seu grid e lute contra inimigos cada vez mais difíceis. Cada inimigo derrotado dá moedas para comprar mais itens!</p>
+  <button class="big-btn" id="start-btn" onclick="startGame()">▶ JOGAR</button>
+</div>
+
+<!-- MAIN GAME -->
+<div id="main-game" class="hidden" style="display:flex;flex-direction:column;min-height:100vh">
+
+  <!-- Top Bar -->
+  <div id="top-bar">
+    <div id="round-info">RODADA 1/8</div>
+    <div id="round-dots"></div>
+    <div id="coins-display">🪙 5</div>
+  </div>
+
+  <!-- Enemy section -->
+  <div id="enemy-section">
+    <div class="section-label enemy-label-bar">▲ INIMIGO</div>
+    <div id="enemy-preview-bar">Carregando...</div>
+    <div class="grid-wrap">
+      <div class="grid enemy-grid-style" id="enemy-grid"></div>
+    </div>
+  </div>
+
+  <!-- Arena (battle only) -->
+  <div id="arena" class="hidden">
+    <div class="fighter" id="player-fighter">
+      <div class="fighter-name" id="player-name">Herói</div>
+      <div class="fighter-emoji" id="player-emoji">🧙</div>
+      <div class="hp-wrap">
+        <div class="hp-bar-bg"><div class="hp-bar-fill" id="player-hp-bar" style="width:100%"></div></div>
+        <div class="hp-num" id="player-hp-num">300</div>
+      </div>
+    </div>
+    <div id="battle-mid">
+      <div id="round-banner"></div>
+      <div id="battle-timer">0:00</div>
+      <div class="ctrl-row">
+        <button class="ctrl-btn" id="pause-btn" onclick="togglePause()" title="Pausar">⏸</button>
+        <button class="ctrl-btn" id="speed-btn" onclick="cycleSpeed()" title="Velocidade">▶</button>
+      </div>
+    </div>
+    <div class="fighter" id="enemy-fighter">
+      <div class="fighter-name" id="enemy-name-disp">Inimigo</div>
+      <div class="fighter-emoji" id="enemy-emoji">👾</div>
+      <div class="hp-wrap">
+        <div class="hp-bar-bg"><div class="hp-bar-fill" id="enemy-hp-bar" style="width:100%"></div></div>
+        <div class="hp-num" id="enemy-hp-num">200</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Grid -->
+  <div id="player-section">
+    <div class="section-label player-label-bar">▼ SEU GRID — clique para comprar • arraste para mover • clique direito para vender</div>
+    <div class="grid-wrap">
+      <div class="grid player-grid-style" id="player-grid"></div>
+    </div>
+  </div>
+
+  <!-- Shop -->
+  <div id="shop-wrap">
+    <div id="shop-header">
+      <div id="shop-title">🏪 LOJA</div>
+      <button id="reroll-btn" onclick="rerollShop()">🔄 Reroll 1🪙</button>
+    </div>
+    <div id="sell-zone" ondragover="sellDragOver(event)" ondragleave="sellDragLeave(event)" ondrop="sellDrop(event)">
+      🗑 Arraste aqui para vender (½ preço)
+    </div>
+    <div id="shop-slots"></div>
+    <div id="sell-hint">Clique direito em item do grid para vender</div>
+    <button id="battle-btn" onclick="startBattle()">⚔️ INICIAR BATALHA</button>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover-screen" class="hidden">
+  <div style="font-size:48px">💀</div>
+  <h1>DERROTA!</h1>
+  <p>Você chegou na rodada<br><span id="go-round" style="color:#ff8888"></span></p>
+  <button class="big-btn" id="restart-btn" onclick="restartGame()">🔄 JOGAR NOVAMENTE</button>
+</div>
+
+<!-- WIN -->
+<div id="win-screen" class="hidden">
+  <div style="font-size:48px">🏆</div>
+  <h1>VITÓRIA!</h1>
+  <p>Você derrotou todos os inimigos!<br>Parabéns, campeão!</p>
+  <button class="big-btn" id="restart-btn2" onclick="restartGame()">🔄 JOGAR NOVAMENTE</button>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div id="result-overlay" class="hidden">
+  <div id="result-modal">
+    <div id="result-title"></div>
+    <div id="result-sub"></div>
+    <div id="result-stats"></div>
+    <button id="next-btn" onclick="afterBattle()">CONTINUAR ▶</button>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip" class="hidden"></div>
+
+</div><!-- #game -->
+
+<script>
+// ====================================================
+// DATA
+// ====================================================
+const GRID_COLS = 5, GRID_ROWS = 4, GSIZ = 20;
+
+const ITEMS = {
+  sword:    {id:'sword',    name:'Espada',         icon:'🗡️',  type:'attack',   rarity:'common',   damage:40,  cd:3.0, cost:3, desc:'Causa {damage} de dano a cada {cd}s.'},
+  dagger:   {id:'dagger',  name:'Adaga',           icon:'🔪',  type:'attack',   rarity:'common',   damage:22,  cd:1.8, cost:3, desc:'Causa {damage} de dano rápido a cada {cd}s.'},
+  bow:      {id:'bow',     name:'Arco',            icon:'🏹',  type:'attack',   rarity:'common',   damage:32,  cd:2.5, cost:3, desc:'Ataque a distância: {damage} de dano a cada {cd}s.'},
+  axe:      {id:'axe',     name:'Machado',         icon:'🪓',  type:'attack',   rarity:'common',   damage:80,  cd:5.5, cost:4, desc:'Golpe pesado: {damage} de dano a cada {cd}s.'},
+  staff:    {id:'staff',   name:'Cajado Mágico',   icon:'🪄',  type:'attack',   rarity:'uncommon', damage:55,  cd:3.5, cost:5, desc:'Dano mágico: {damage} a cada {cd}s. Ignora armadura plana.', magical:true},
+  fireball: {id:'fireball',name:'Bola de Fogo',    icon:'🔥',  type:'attack',   rarity:'rare',     damage:110, cd:6.0, cost:7, desc:'Explosão massiva: {damage} de dano a cada {cd}s. Ignora armadura.', magical:true},
+  shield:   {id:'shield',  name:'Broquel',         icon:'🛡️',  type:'defense',  rarity:'common',   blockChance:30, blockAmt:20, cost:3, desc:'Ao sofrer ataque: 30% de chance de reduzir o dano em 20%.'},
+  helmet:   {id:'helmet',  name:'Elmo',            icon:'⛑️',  type:'defense',  rarity:'common',   blockChance:20, blockAmt:15, cost:3, desc:'Ao sofrer ataque: 20% de chance de reduzir o dano em 15%.'},
+  armor:    {id:'armor',   name:'Armadura',        icon:'🥋',  type:'defense',  rarity:'uncommon', flatReduce:12, cost:4, desc:'Reduz todo dano físico recebido em {flatReduce}.'},
+  boots:    {id:'boots',   name:'Botas de Vento',  icon:'👢',  type:'utility',  rarity:'common',   speedBonus:25, cost:3, desc:'Todos os itens de ataque activam 25% mais rápido.'},
+  potion:   {id:'potion',  name:'Poção de Vida',   icon:'🧪',  type:'utility',  rarity:'common',   healAmt:80, cost:3, desc:'Restaura {healAmt} de HP no início da batalha.'},
+  ring:     {id:'ring',    name:'Anel de Poder',   icon:'💍',  type:'utility',  rarity:'uncommon', dmgBonus:25, cost:5, desc:'Aumenta o dano de todos os itens de ataque em 25%.'},
+  amulet:   {id:'amulet',  name:'Amuleto Sagrado', icon:'📿',  type:'utility',  rarity:'uncommon', maxHpBonus:80, cost:4, desc:'Aumenta o HP máximo em {maxHpBonus}.'},
+  cat:      {id:'cat',     name:'Gato Guerreiro',  icon:'🐱',  type:'companion',rarity:'uncommon', damage:25, cd:2.5, cost:5, desc:'Seu gato ataca por {damage} de dano a cada {cd}s.'},
+  wolf:     {id:'wolf',    name:'Lobo Feroz',      icon:'🐺',  type:'companion',rarity:'rare',     damage:45, cd:3.0, cost:7, desc:'O lobo ataca por {damage} de dano a cada {cd}s.'},
+};
+
+const WAVES = [
+  {name:'Slime Azul',          emoji:'🫧', hp:120, items:['dagger'],                             reward:3},
+  {name:'Fantasma Perplexo',   emoji:'👻', hp:190, items:['sword','shield'],                     reward:4},
+  {name:'Goblin Ladrão',       emoji:'👺', hp:170, items:['dagger','boots'],                     reward:5},
+  {name:'Esqueleto Guerreiro', emoji:'💀', hp:270, items:['sword','helmet','armor'],              reward:5},
+  {name:'Mago Sombrio',        emoji:'🧙', hp:230, items:['staff','ring'],                       reward:6},
+  {name:'Orc Bruto',           emoji:'👹', hp:400, items:['axe','helmet','armor','boots'],       reward:7},
+  {name:'Cavaleiro das Trevas',emoji:'🦹', hp:480, items:['sword','axe','shield','armor','ring'],reward:9},
+  {name:'Dragão Antigo',       emoji:'🐉', hp:700, items:['fireball','axe','armor','ring','shield','helmet'],reward:15,boss:true},
+];
+
+// Enemy item grid positions (5x4 = 20 slots)
+const ENEMY_POSITIONS = [2,7,6,11,12,1,16,3];
+
+// ====================================================
+// STATE
+// ====================================================
+let G = {}; // game state
+let battleRAF = null;
+let lastTick = 0;
+let dragSrc = null; // {type:'shop'|'grid', index:N}
+
+function newGame() {
+  return {
+    phase: 'shop', // shop | battle
+    round: 0,
+    coins: 6,
+    playerGrid: new Array(GSIZ).fill(null),
+    shopSlots: [null,null,null],
+    enemy: null,
+    battle: null,
+    lastResult: null,
+  };
+}
+
+// ====================================================
+// BOOT
+// ====================================================
+function startGame() {
+  G = newGame();
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('main-game').style.display = 'flex';
+  enterShop();
+}
+
+function restartGame() {
+  if (battleRAF) { cancelAnimationFrame(battleRAF); battleRAF = null; }
+  document.getElementById('gameover-screen').classList.add('hidden');
+  document.getElementById('win-screen').classList.add('hidden');
+  document.getElementById('main-game').style.display = 'none';
+  document.getElementById('start-screen').classList.remove('hidden');
+}
+
+// ====================================================
+// SHOP PHASE
+// ====================================================
+function enterShop() {
+  G.phase = 'shop';
+  G.round++;
+  if (G.round > WAVES.length) { showWin(); return; }
+
+  const wave = WAVES[G.round - 1];
+  G.enemy = {
+    ...wave,
+    items: wave.items.map(id => ({...ITEMS[id]})),
+    gridMap: buildEnemyGridMap(wave.items.map(id => ({...ITEMS[id]})))
+  };
+
+  generateShop();
+  renderAll();
+}
+
+function buildEnemyGridMap(items) {
+  const g = new Array(GSIZ).fill(null);
+  items.forEach((item, i) => {
+    if (i < ENEMY_POSITIONS.length) g[ENEMY_POSITIONS[i]] = {...item};
+  });
+  return g;
+}
+
+function generateShop() {
+  const pool = Object.values(ITEMS).filter(it => {
+    if (it.rarity === 'rare' && G.round < 4) return false;
+    if (it.rarity === 'uncommon' && G.round < 2) return false;
+    return true;
+  });
+  const chosen = [];
+  const used = new Set();
+  for (let i = 0; i < 3; i++) {
+    let item, tries = 0;
+    do { item = pool[Math.floor(Math.random() * pool.length)]; tries++; }
+    while (used.has(item.id) && tries < 30);
+    used.add(item.id);
+    chosen.push({...item});
+  }
+  G.shopSlots = chosen;
+}
+
+function rerollShop() {
+  if (G.coins < 1) { flashEl('coins-display'); return; }
+  G.coins--;
+  generateShop();
+  renderTopBar();
+  renderShop();
+}
+
+// ====================================================
+// RENDER
+// ====================================================
+function renderAll() {
+  renderTopBar();
+  renderEnemySection();
+  renderPlayerGrid();
+  renderShop();
+  // Show/hide sections
+  document.getElementById('arena').classList.add('hidden');
+  document.getElementById('shop-wrap').classList.remove('hidden');
+  document.getElementById('enemy-preview-bar').classList.remove('hidden');
+}
+
+function renderTopBar() {
+  document.getElementById('round-info').textContent = `RODADA ${G.round}/${WAVES.length}`;
+  document.getElementById('coins-display').textContent = `🪙 ${G.coins}`;
+  const dots = document.getElementById('round-dots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= WAVES.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'round-dot' + (i < G.round ? ' done' : i === G.round ? ' current' : '');
+    dots.appendChild(d);
+  }
+}
+
+function renderEnemySection() {
+  const e = G.enemy;
+  const pb = document.getElementById('enemy-preview-bar');
+  pb.textContent = `${e.emoji} ${e.name}  ❤️ ${e.hp}  ${e.boss ? '👑 CHEFE' : ''}`;
+  renderGridEl('enemy-grid', e.gridMap, false, false);
+}
+
+function renderPlayerGrid() {
+  renderGridEl('player-grid', G.playerGrid, true, G.phase === 'shop');
+}
+
+function renderGridEl(elId, gridData, isPlayer, editable) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  for (let i = 0; i < GSIZ; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    cell.dataset.i = i;
+    const item = gridData[i];
+
+    if (item) {
+      cell.classList.add('has-item');
+      const span = document.createElement('span');
+      span.className = 'item-emoji';
+      span.textContent = item.icon;
+      cell.appendChild(span);
+
+      // Timer bar for attack/companion items in battle
+      if (item._timer !== undefined) {
+        const tb = document.createElement('div'); tb.className = 'timer-bar';
+        const tf = document.createElement('div'); tf.className = 'timer-fill';
+        tf.id = (isPlayer ? 'pt' : 'et') + i;
+        const pct = Math.max(0, Math.min(100, (1 - item._timer / item._maxTimer) * 100));
+        tf.style.width = pct + '%';
+        if (item._timer <= 0) { tf.classList.add('ready'); cell.classList.add('item-ready'); }
+        tb.appendChild(tf); cell.appendChild(tb);
+      }
+
+      addTooltip(cell, item);
+
+      if (editable) {
+        cell.setAttribute('draggable', 'true');
+        cell.addEventListener('dragstart', e => { dragSrc = {type:'grid',index:i}; e.dataTransfer.effectAllowed='move'; cell.classList.add('shop-drag-src'); });
+        cell.addEventListener('dragend', () => cell.classList.remove('shop-drag-src'));
+        cell.addEventListener('contextmenu', e => { e.preventDefault(); sellGridItem(i); });
+      }
+    }
+
+    if (editable) {
+      cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('drag-over'); });
+      cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
+      cell.addEventListener('drop', e => { e.preventDefault(); cell.classList.remove('drag-over'); handleDropOnGrid(i); });
+    }
+
+    el.appendChild(cell);
+  }
+}
+
+function renderShop() {
+  const cont = document.getElementById('shop-slots');
+  cont.innerHTML = '';
+  G.shopSlots.forEach((item, i) => {
+    const el = document.createElement('div');
+    if (!item) { el.className = 'shop-slot empty'; el.innerHTML = '<span style="font-size:18px;color:#2a2a5e">✕</span>'; cont.appendChild(el); return; }
+    el.className = 'shop-slot';
+    const canAfford = G.coins >= item.cost;
+    if (!canAfford) el.classList.add('cant-afford');
+    el.innerHTML = `<span class="rarity-tag r-${item.rarity}">${item.rarity}</span>
+      <span class="shop-icon">${item.icon}</span>
+      <span class="shop-name">${item.name}</span>
+      <span class="shop-cost">${item.cost}🪙</span>`;
+    el.setAttribute('draggable', 'true');
+    el.addEventListener('dragstart', e => { dragSrc = {type:'shop',index:i}; e.dataTransfer.effectAllowed='move'; el.classList.add('dragging'); });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    el.addEventListener('click', () => buyShopItem(i));
+    addTooltip(el, item);
+    cont.appendChild(el);
+  });
+}
+
+// ====================================================
+// SHOP INTERACTIONS
+// ====================================================
+function buyShopItem(slotIndex) {
+  const item = G.shopSlots[slotIndex];
+  if (!item) return;
+  if (G.coins < item.cost) { flashEl('coins-display'); return; }
+  const emptyIdx = G.playerGrid.indexOf(null);
+  if (emptyIdx === -1) { showNotice('Grid cheio! Venda um item primeiro.'); return; }
+  G.coins -= item.cost;
+  G.playerGrid[emptyIdx] = {...item};
+  G.shopSlots[slotIndex] = null;
+  renderTopBar();
+  renderPlayerGrid();
+  renderShop();
+}
+
+function sellGridItem(idx) {
+  const item = G.playerGrid[idx];
+  if (!item) return;
+  G.coins += Math.max(1, Math.floor(item.cost / 2));
+  G.playerGrid[idx] = null;
+  renderTopBar();
+  renderPlayerGrid();
+}
+
+function handleDropOnGrid(targetIdx) {
+  if (!dragSrc) return;
+  if (dragSrc.type === 'shop') {
+    const item = G.shopSlots[dragSrc.index];
+    if (!item) { dragSrc = null; return; }
+    if (G.coins < item.cost) { flashEl('coins-display'); dragSrc = null; return; }
+    // If target has item, swap to first empty; otherwise place directly
+    if (G.playerGrid[targetIdx] !== null) {
+      const empty = G.playerGrid.indexOf(null);
+      if (empty === -1) { showNotice('Grid cheio!'); dragSrc = null; return; }
+      G.coins -= item.cost;
+      G.playerGrid[empty] = {...item};
+    } else {
+      G.coins -= item.cost;
+      G.playerGrid[targetIdx] = {...item};
+    }
+    G.shopSlots[dragSrc.index] = null;
+    renderTopBar(); renderPlayerGrid(); renderShop();
+  } else if (dragSrc.type === 'grid') {
+    const fromIdx = dragSrc.index;
+    const tmp = G.playerGrid[fromIdx];
+    G.playerGrid[fromIdx] = G.playerGrid[targetIdx];
+    G.playerGrid[targetIdx] = tmp;
+    renderPlayerGrid();
+  }
+  dragSrc = null;
+}
+
+function sellDragOver(e) { e.preventDefault(); document.getElementById('sell-zone').classList.add('drag-over'); }
+function sellDragLeave(e) { document.getElementById('sell-zone').classList.remove('drag-over'); }
+function sellDrop(e) {
+  e.preventDefault();
+  document.getElementById('sell-zone').classList.remove('drag-over');
+  if (dragSrc && dragSrc.type === 'grid') {
+    sellGridItem(dragSrc.index);
+    dragSrc = null;
+  }
+}
+
+// ====================================================
+// BATTLE PHASE
+// ====================================================
+function startBattle() {
+  G.phase = 'battle';
+
+  const pg = G.playerGrid.filter(Boolean);
+  // Compute player stats from utility items
+  const speedBonus  = pg.filter(i=>i.id==='boots').reduce((s,i)=>s+i.speedBonus,0) / 100;
+  const dmgBonus    = pg.filter(i=>i.id==='ring').reduce((s,i)=>s+i.dmgBonus,0) / 100;
+  const maxHpBonus  = pg.filter(i=>i.id==='amulet').reduce((s,i)=>s+i.maxHpBonus,0);
+  const healAmt     = pg.filter(i=>i.id==='potion').reduce((s,i)=>s+i.healAmt,0);
+  const playerMaxHp = 300 + maxHpBonus;
+  const playerHp    = Math.min(playerMaxHp, playerMaxHp + healAmt);
+
+  const eg = G.enemy.items;
+  const eSpeedBonus = eg.filter(i=>i.id==='boots').reduce((s,i)=>s+i.speedBonus,0) / 100;
+  const eDmgBonus   = eg.filter(i=>i.id==='ring').reduce((s,i)=>s+i.dmgBonus,0)   / 100;
+
+  // Build attack item states
+  const makeAttackers = (items, speedBon, dmgBon) =>
+    items
+      .filter(i => i.type==='attack' || i.type==='companion')
+      .map(item => {
+        const baseTimer = item.cd / (1 + speedBon);
+        return { ...item, _timer: baseTimer, _maxTimer: baseTimer, _dmgBonus: dmgBon };
+      });
+
+  // Attach _timer to enemy grid map items for rendering
+  const enemyAttackers = makeAttackers(eg, eSpeedBonus, eDmgBonus);
+  const egm = [...G.enemy.gridMap];
+  enemyAttackers.forEach(att => {
+    const pos = egm.findIndex(c => c && c.id === att.id && c._timer === undefined);
+    if (pos !== -1) { egm[pos] = {...att}; att._gridIdx = pos; }
+  });
+
+  // Player grid items with timers
+  const playerAttackers = [];
+  const pgm = G.playerGrid.map((item, idx) => {
+    if (!item || (item.type !== 'attack' && item.type !== 'companion')) return item;
+    const baseTimer = item.cd / (1 + speedBonus);
+    const att = { ...item, _timer: baseTimer, _maxTimer: baseTimer, _dmgBonus: dmgBonus, _gridIdx: idx };
+    playerAttackers.push(att);
+    return att;
+  });
+
+  G.battle = {
+    playerHp, playerMaxHp,
+    enemyHp: G.enemy.hp, enemyMaxHp: G.enemy.hp,
+    playerAttackers, enemyAttackers,
+    playerDefense: pg.filter(i=>i.type==='defense'),
+    enemyDefense: eg.filter(i=>i.type==='defense'),
+    playerGridMap: pgm,
+    enemyGridMap: egm,
+    time: 0, paused: false, speed: 1,
+    totalPlayerDmg: 0, totalEnemyDmg: 0,
+  };
+
+  renderBattleUI();
+  lastTick = performance.now();
+  battleRAF = requestAnimationFrame(battleLoop);
+}
+
+function renderBattleUI() {
+  document.getElementById('shop-wrap').classList.add('hidden');
+  document.getElementById('enemy-preview-bar').classList.add('hidden');
+  document.getElementById('arena').classList.remove('hidden');
+
+  document.getElementById('player-name').textContent = 'Herói';
+  document.getElementById('player-emoji').textContent = '🧙';
+  document.getElementById('enemy-name-disp').textContent = G.enemy.name;
+  document.getElementById('enemy-emoji').textContent = G.enemy.emoji;
+  document.getElementById('round-banner').textContent = `RODADA ${G.round}/${WAVES.length}`;
+  document.getElementById('speed-btn').textContent = '1x';
+  document.getElementById('pause-btn').textContent = '⏸';
+
+  updateHpBars();
+  renderGridEl('enemy-grid', G.battle.enemyGridMap, false, false);
+  renderGridEl('player-grid', G.battle.playerGridMap, false, false);
+}
+
+// ====================================================
+// BATTLE LOOP
+// ====================================================
+function battleLoop(now) {
+  if (!G.battle) return;
+  const b = G.battle;
+  if (!b.paused) {
+    const rawDt = Math.min(now - lastTick, 200);
+    const dt = rawDt * b.speed / 1000; // seconds
+    b.time += rawDt * b.speed;
+
+    // Player attacks
+    for (const att of b.playerAttackers) {
+      att._timer -= dt;
+      if (att._timer <= 0) {
+        att._timer = att._maxTimer;
+        const dmg = computeDmg(att, b.enemyDefense);
+        b.enemyHp -= dmg;
+        b.totalPlayerDmg += dmg;
+        spawnDmg(dmg, false);
+        shakeEl('enemy-fighter');
+      }
+    }
+    // Enemy attacks
+    for (const att of b.enemyAttackers) {
+      att._timer -= dt;
+      if (att._timer <= 0) {
+        att._timer = att._maxTimer;
+        const dmg = computeDmg(att, b.playerDefense);
+        b.playerHp -= dmg;
+        b.totalEnemyDmg += dmg;
+        spawnDmg(dmg, true);
+        shakeEl('player-fighter');
+      }
+    }
+
+    updateHpBars();
+    updateBattleTimer();
+    updateTimerBars();
+
+    if (b.playerHp <= 0 || b.enemyHp <= 0) {
+      cancelAnimationFrame(battleRAF); battleRAF = null;
+      setTimeout(() => endBattle(b.enemyHp <= 0), 400);
+      lastTick = now;
+      return;
+    }
+  }
+  lastTick = now;
+  battleRAF = requestAnimationFrame(battleLoop);
+}
+
+function computeDmg(att, defenses) {
+  let dmg = att.damage * (1 + (att._dmgBonus || 0));
+  for (const def of defenses) {
+    if (def.blockChance && Math.random() * 100 < def.blockChance) {
+      dmg *= (1 - def.blockAmt / 100);
+    }
+    if (!att.magical && def.flatReduce) {
+      dmg -= def.flatReduce;
+    }
+  }
+  return Math.max(1, Math.round(dmg));
+}
+
+function updateHpBars() {
+  const b = G.battle;
+  const pp = Math.max(0, b.playerHp / b.playerMaxHp * 100);
+  const ep = Math.max(0, b.enemyHp / b.enemyMaxHp * 100);
+  document.getElementById('player-hp-bar').style.width = pp + '%';
+  document.getElementById('enemy-hp-bar').style.width  = ep + '%';
+  document.getElementById('player-hp-num').textContent = `❤️ ${Math.max(0,Math.ceil(b.playerHp))}`;
+  document.getElementById('enemy-hp-num').textContent  = `❤️ ${Math.max(0,Math.ceil(b.enemyHp))}`;
+}
+
+function updateBattleTimer() {
+  const ms = G.battle.time;
+  const s = Math.floor(ms/1000);
+  document.getElementById('battle-timer').textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+function updateTimerBars() {
+  const b = G.battle;
+  for (const att of b.playerAttackers) {
+    const el = document.getElementById('pt' + att._gridIdx);
+    if (el) {
+      const pct = Math.max(0, Math.min(100, (1 - att._timer / att._maxTimer) * 100));
+      el.style.width = pct + '%';
+      el.classList.toggle('ready', att._timer <= 0.05);
+    }
+  }
+  for (const att of b.enemyAttackers) {
+    const el = document.getElementById('et' + att._gridIdx);
+    if (el) {
+      const pct = Math.max(0, Math.min(100, (1 - att._timer / att._maxTimer) * 100));
+      el.style.width = pct + '%';
+      el.classList.toggle('ready', att._timer <= 0.05);
+    }
+  }
+}
+
+// ====================================================
+// BATTLE CONTROLS
+// ====================================================
+function togglePause() {
+  const b = G.battle; if (!b) return;
+  b.paused = !b.paused;
+  document.getElementById('pause-btn').textContent = b.paused ? '▶' : '⏸';
+  if (!b.paused) { lastTick = performance.now(); }
+}
+
+function cycleSpeed() {
+  const b = G.battle; if (!b) return;
+  const speeds = [1,2,3];
+  const next = speeds[(speeds.indexOf(b.speed)+1) % speeds.length];
+  b.speed = next;
+  document.getElementById('speed-btn').textContent = next + 'x';
+}
+
+// ====================================================
+// END BATTLE
+// ====================================================
+function endBattle(won) {
+  G.lastResult = won;
+  const overlay = document.getElementById('result-overlay');
+  const title = document.getElementById('result-title');
+  const sub = document.getElementById('result-sub');
+  const stats = document.getElementById('result-stats');
+  const nextBtn = document.getElementById('next-btn');
+  const b = G.battle;
+
+  if (won) {
+    const reward = G.enemy.reward;
+    G.coins += reward;
+    title.textContent = '🏆 VITÓRIA!';
+    title.className = 'win';
+    sub.textContent = `+${reward} 🪙 recebidos`;
+    stats.innerHTML = `Dano causado: ${b.totalPlayerDmg}<br>Dano recebido: ${b.totalEnemyDmg}`;
+    nextBtn.textContent = G.round >= WAVES.length ? '🏆 VER RESULTADO' : '▶ PRÓXIMA RODADA';
+  } else {
+    title.textContent = '💀 DERROTA!';
+    title.className = 'lose';
+    sub.textContent = 'Você foi derrotado...';
+    stats.innerHTML = `Dano causado: ${b.totalPlayerDmg}<br>Dano recebido: ${b.totalEnemyDmg}`;
+    nextBtn.textContent = '🔄 TENTAR NOVAMENTE';
+  }
+  renderTopBar();
+  overlay.classList.remove('hidden');
+}
+
+function afterBattle() {
+  document.getElementById('result-overlay').classList.add('hidden');
+  if (!G.lastResult) { showGameOver(); return; }
+  if (G.round >= WAVES.length) { showWin(); return; }
+  enterShop();
+}
+
+function showGameOver() {
+  document.getElementById('main-game').style.display = 'none';
+  document.getElementById('gameover-screen').classList.remove('hidden');
+  document.getElementById('go-round').textContent = `${G.round}/${WAVES.length}`;
+}
+
+function showWin() {
+  document.getElementById('main-game').style.display = 'none';
+  document.getElementById('win-screen').classList.remove('hidden');
+}
+
+// ====================================================
+// TOOLTIP
+// ====================================================
+function addTooltip(el, item) {
+  el.addEventListener('mouseenter', e => showTip(item, e.clientX, e.clientY));
+  el.addEventListener('mousemove',  e => moveTip(e.clientX, e.clientY));
+  el.addEventListener('mouseleave', hideTip);
+}
+
+function showTip(item, x, y) {
+  const tip = document.getElementById('tooltip');
+  const desc = (item.desc || '')
+    .replace('{damage}', item.damage||'')
+    .replace('{cd}', item.cd||'')
+    .replace('{flatReduce}', item.flatReduce||'')
+    .replace('{healAmt}', item.healAmt||'')
+    .replace('{maxHpBonus}', item.maxHpBonus||'')
+    .replace('{speedBonus}', item.speedBonus||'')
+    .replace('{dmgBonus}', item.dmgBonus||'')
+    .replace('{blockChance}', item.blockChance||'')
+    .replace('{blockAmt}', item.blockAmt||'');
+  const typeLabels = {attack:'⚔️ Ataque',defense:'🛡️ Defesa',utility:'✨ Utilidade',companion:'🐾 Companheiro'};
+  tip.innerHTML = `<div class="tip-name">${item.icon} ${item.name}</div><div class="tip-desc">${desc}</div><div class="tip-type">${typeLabels[item.type]||item.type} · ${item.rarity}</div>`;
+  tip.classList.remove('hidden');
+  moveTip(x, y);
+}
+
+function moveTip(x, y) {
+  const tip = document.getElementById('tooltip');
+  const left = x + 12 + tip.offsetWidth > window.innerWidth ? x - tip.offsetWidth - 12 : x + 12;
+  tip.style.left = left + 'px';
+  tip.style.top  = Math.max(4, y - 10) + 'px';
+}
+
+function hideTip() { document.getElementById('tooltip').classList.add('hidden'); }
+
+// ====================================================
+// FX
+// ====================================================
+function spawnDmg(amount, onPlayer) {
+  const targetEl = document.getElementById(onPlayer ? 'player-fighter' : 'enemy-fighter');
+  const rect = targetEl.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'dmg-num';
+  el.textContent = '-' + amount;
+  el.style.color = onPlayer ? '#ff6666' : '#ffdd44';
+  el.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*30) + 'px';
+  el.style.top  = (rect.top  + rect.height/2 + (Math.random()-0.5)*20) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+function shakeEl(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+function flashEl(id) {
+  const el = document.getElementById(id);
+  const orig = el.style.color;
+  el.style.color = '#ff4444';
+  setTimeout(() => el.style.color = orig, 350);
+}
+
+function showNotice(msg) {
+  // Simple inline notice
+  const n = document.createElement('div');
+  n.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a3a;border:2px solid #6666aa;border-radius:6px;padding:14px 20px;font-size:8px;color:#ffcc44;z-index:500;pointer-events:none';
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 1800);
+}
+</script>
+</body>
+</html>
