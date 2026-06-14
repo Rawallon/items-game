@@ -10,23 +10,104 @@
 body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New',monospace;min-height:100vh;display:flex;justify-content:center}
 #game{width:100%;max-width:480px;background:#0d0d23;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
 .hidden{display:none!important}
-#main-game{display:flex;flex-direction:column;min-height:100vh}
-#main-game.gone{display:none}
 
-/* ── START ── */
-#start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;gap:16px}
-#start-screen h1{font-size:22px;color:#ffcc00;text-shadow:0 0 30px #ffaa0088;line-height:1.6}
-#start-screen p{font-size:7px;color:#a0a0ff;line-height:2.2;max-width:300px}
-.start-stats{background:#14143a;border:2px solid #3a3a6e;border-radius:6px;padding:10px 16px;display:flex;gap:16px;font-size:7px}
-.start-stat{display:flex;flex-direction:column;align-items:center;gap:3px}
-.start-stat span:first-child{font-size:14px}
-.start-stat span:last-child{color:#88aaff}
-.big-btn{font-family:'Press Start 2P',monospace;cursor:pointer;border-radius:4px;padding:14px 28px;font-size:10px;border:3px solid;transition:background 0.15s}
-#start-btn{background:#3a1a6a;border-color:#9a44ff;color:#cc88ff}
-#start-btn:hover{background:#5a2a9a}
-#restart-btn,#restart-btn2{background:#1a1a3a;border-color:#6666aa;color:#a0a0ff}
+/* ── PAGE SYSTEM ── */
+.page{display:none;flex-direction:column;min-height:100vh}
+.page.active{display:flex}
 
-/* ── TOP BAR ── */
+/* ══════════════════════════════════════
+   HERO SELECT PAGE
+══════════════════════════════════════ */
+#page-hero-select{background:#080818;padding:0;overflow:hidden}
+.hs-header{padding:18px 16px 10px;text-align:center;flex-shrink:0}
+.hs-title{font-size:14px;color:#ffcc00;text-shadow:0 0 20px #ffaa0066;margin-bottom:4px}
+.hs-sub{font-size:6px;color:#6677aa;margin-top:6px}
+.hs-scroll{flex:1;overflow-x:auto;overflow-y:auto;padding:10px 12px 10px;display:flex;gap:10px;align-items:flex-start;-webkit-overflow-scrolling:touch}
+.hero-card{flex-shrink:0;width:148px;background:#0e0e2a;border:3px solid #2a2a5e;border-radius:10px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:border-color 0.2s,background 0.2s,box-shadow 0.2s;position:relative}
+.hero-card:hover{background:#141432;border-color:#5566aa}
+.hero-card.selected{border-color:var(--hcolor);box-shadow:0 0 16px var(--hcolor)44,0 0 32px var(--hcolor)22;background:#14143a}
+.hero-card-emoji{font-size:44px;line-height:1;filter:drop-shadow(0 0 8px var(--hcolor)88)}
+.hero-card-name{font-size:8px;color:#e0e0ff;text-align:center}
+.hero-card-passive{font-size:5px;color:#8899bb;line-height:1.8;text-align:center;min-height:40px}
+.hero-stat-bars{width:100%;display:flex;flex-direction:column;gap:4px}
+.hero-stat-row{display:flex;align-items:center;gap:5px;font-size:5px;color:#6677aa}
+.hero-stat-label{width:28px;flex-shrink:0}
+.hero-stat-bg{flex:1;height:5px;background:#1a1a3a;border-radius:3px;overflow:hidden}
+.hero-stat-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.hero-chips{display:flex;flex-wrap:wrap;gap:3px;justify-content:center}
+.chip-str{font-size:4px;padding:2px 5px;background:#0a2010;color:#55cc88;border:1px solid #2a6a4a;border-radius:8px}
+.chip-weak{font-size:4px;padding:2px 5px;background:#200a0a;color:#cc5555;border:1px solid #6a2a2a;border-radius:8px}
+.hs-confirm-wrap{padding:14px 16px;flex-shrink:0}
+.hs-confirm-btn{width:100%;font-family:'Press Start 2P',monospace;background:#1a1040;border:3px solid #ffcc00;color:#ffcc00;font-size:10px;padding:14px;cursor:pointer;border-radius:6px;letter-spacing:1px;transition:background 0.15s}
+.hs-confirm-btn:hover{background:#2a2060}
+.hs-confirm-btn:disabled{opacity:0.35;cursor:default}
+
+/* ══════════════════════════════════════
+   LOBBY PAGE
+══════════════════════════════════════ */
+#page-lobby{background:radial-gradient(ellipse at center top, #16103a 0%, #080818 65%);padding-bottom:56px}
+.lobby-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #1a1a3a;flex-shrink:0}
+.lobby-hero-left{display:flex;align-items:center;gap:8px}
+.lobby-change-btn{font-family:'Press Start 2P',monospace;background:#0e0e2a;border:1px solid #3a3a6e;color:#6677aa;font-size:5px;padding:4px 7px;cursor:pointer;border-radius:3px}
+.lobby-change-btn:hover{background:#1a1a3a}
+.lobby-hero-name-top{font-size:7px;color:#c0c0ff}
+.lobby-meta-gold{font-size:10px;color:#ffd700}
+.dungeon-banner{margin:12px 14px 0;background:#0e0e2a;border:2px solid #2a2a5e;border-radius:20px;padding:8px 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0}
+.dungeon-banner-icon{font-size:18px}
+.dungeon-banner-text{font-size:7px;color:#c0c8ff}
+.dungeon-banner-best{font-size:6px;color:#6677aa;margin-top:2px}
+.hero-platform-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 16px;gap:10px}
+.hero-platform{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px}
+.hero-platform-emoji{font-size:80px;line-height:1;filter:drop-shadow(0 0 24px var(--hcolor,#4488ff))drop-shadow(0 4px 8px rgba(0,0,0,0.6));animation:heroFloat 3s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero-platform-shadow{width:90px;height:14px;background:radial-gradient(ellipse,var(--hcolor,#4488ff)55 0%,transparent 70%);border-radius:50%;margin-top:-8px;opacity:0.5;animation:heroShadow 3s ease-in-out infinite}
+@keyframes heroShadow{0%,100%{transform:scaleX(1);opacity:0.5}50%{transform:scaleX(0.75);opacity:0.3}}
+.hero-platform-name{font-size:10px;color:#e0e0ff;text-align:center}
+.hero-platform-passive{font-size:5px;color:#6677aa;text-align:center;line-height:1.8;max-width:260px}
+.hero-stats-row{display:flex;gap:10px;justify-content:center;flex-shrink:0;padding:0 16px}
+.stat-chip{background:#0e0e2a;border:1px solid #2a2a5e;border-radius:6px;padding:6px 10px;font-size:7px;color:#c0c0ff;text-align:center}
+.start-battle-wrap{padding:12px 14px;flex-shrink:0}
+.start-battle-btn{width:100%;font-family:'Press Start 2P',monospace;background:#321408;border:3px solid #cc8800;color:#ffcc44;font-size:10px;padding:14px;cursor:pointer;border-radius:6px;letter-spacing:1px;transition:background 0.15s}
+.start-battle-btn:hover{background:#4a2010}
+
+/* ══════════════════════════════════════
+   TRAINING PAGE
+══════════════════════════════════════ */
+#page-training{background:#080818;padding-bottom:56px}
+.train-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #1a1a3a;flex-shrink:0}
+.train-topbar-title{font-size:9px;color:#88ee88}
+.train-topbar-gold{font-size:10px;color:#ffd700}
+.prestige-section{flex:1;display:flex;flex-direction:column;align-items:center;padding:18px 16px 12px;gap:12px}
+.prestige-label{font-size:7px;color:#a0a0cc}
+.prestige-bar-area{position:relative;display:flex;align-items:flex-start;justify-content:center;gap:0}
+.prestige-milestones-left{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;height:220px;padding-right:8px}
+.prestige-milestone-label{font-size:5px;color:#6677aa;line-height:1}
+.prestige-bar-track{position:relative;width:8px;height:220px;background:#141424;border-radius:4px;overflow:visible}
+.prestige-bar-fill{width:100%;background:linear-gradient(to top,#9944ff,#ff44cc);border-radius:4px;position:absolute;bottom:0;left:0;transition:height 0.5s ease}
+.prestige-bar-dot{position:absolute;width:14px;height:14px;background:#ffffff;border-radius:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px #cc88ff,0 0 16px #aa44ff88;z-index:2}
+.prestige-milestones-right{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;height:220px;padding-left:8px}
+.prestige-reward-badge{font-size:5px;color:#ffd700;background:#1a1208;border:1px solid #5a4a10;border-radius:4px;padding:2px 5px;white-space:nowrap}
+.upgrade-cards{display:flex;gap:8px;padding:0 12px 4px;flex-shrink:0}
+.upgrade-card{flex:1;background:#0e0e2a;border:2px solid #2a2a5e;border-radius:8px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.upgrade-card-icon{font-size:22px}
+.upgrade-card-lvl{font-size:7px;color:#ffcc00}
+.upgrade-card-name{font-size:5px;color:#8899bb}
+.upgrade-card-desc{font-size:5px;color:#c0c0ff;line-height:1.8}
+.upgrade-card-cost{font-size:7px;color:#ffd700}
+.upgrade-card-btn{font-family:'Press Start 2P',monospace;background:#1a3a1a;border:2px solid #3a7a3a;color:#88ee88;font-size:5px;padding:5px 6px;cursor:pointer;border-radius:3px;width:100%;transition:background 0.1s}
+.upgrade-card-btn:hover:not(:disabled){background:#2a5a2a}
+.upgrade-card-btn:disabled{opacity:0.4;cursor:default}
+.upgrade-card-btn.maxed{background:#1a1a2a;border-color:#3a3a5e;color:#556677}
+
+/* ══════════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════════ */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:56px;background:#0a0a1e;border-top:2px solid #1a1a3a;display:flex;z-index:50;flex-shrink:0}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:5px;color:#445566;border-bottom:3px solid transparent;transition:color 0.15s,border-color 0.15s;background:none;border-left:none;border-right:none;border-top:none;font-family:'Press Start 2P',monospace}
+.nav-tab.active{color:#aaccff;border-bottom-color:#4488ff}
+.nav-tab-icon{font-size:18px}
+
+/* ── TOP BAR (game) ── */
 #top-bar{background:#14143a;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #2a2a5e;flex-shrink:0}
 #round-info{font-size:7px;color:#ffcc00}
 #round-dots{display:flex;gap:4px;align-items:center}
@@ -85,8 +166,6 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
 #shop-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 #shop-left{display:flex;align-items:center;gap:6px}
 #shop-title{font-size:7px;color:#a0a0ff}
-#train-btn{font-family:'Press Start 2P',monospace;background:#1a2a1a;border:2px solid #3a7a3a;color:#88dd88;font-size:6px;padding:4px 7px;cursor:pointer;border-radius:3px}
-#train-btn:hover{background:#2a4a2a}
 #reroll-btn{font-family:'Press Start 2P',monospace;background:#161630;border:2px solid #323268;color:#8888dd;font-size:6px;padding:5px 8px;cursor:pointer;border-radius:3px}
 #reroll-btn:hover{background:#24244a}
 #shop-slots{display:flex;gap:5px;margin-bottom:8px}
@@ -118,36 +197,13 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
 #result-stars{font-size:26px;letter-spacing:4px;min-height:32px}
 #result-enemy{font-size:7px;color:#aaaacc}
 #result-reward{font-size:9px;color:#ffd700}
+#result-meta-reward{font-size:8px;color:#ffaa44;margin-top:-4px}
 #result-divider{border:none;border-top:1px solid #2a2a5e}
 #result-stats{font-size:6px;color:#7788aa;line-height:2.2}
 #next-btn{font-family:'Press Start 2P',monospace;background:#143014;border:3px solid #3a8a3a;color:#88ee88;font-size:9px;padding:10px;cursor:pointer;border-radius:4px;transition:background 0.1s}
 #next-btn:hover{background:#224422}
-
-/* ── GAMEOVER / WIN ── */
-#gameover-screen,#win-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;gap:16px}
-#gameover-screen h1{font-size:18px;color:#ff4444}
-#win-screen h1{font-size:16px;color:#ffcc00;line-height:1.6}
-#gameover-screen p,#win-screen p{font-size:8px;color:#a0a0ff;line-height:2}
-.final-stats{background:#12122a;border:2px solid #3a3a6e;border-radius:6px;padding:12px;font-size:6px;color:#8899bb;line-height:2.5;text-align:left;min-width:200px}
-
-/* ── TRAINING MODAL ── */
-#train-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:150}
-#train-modal{background:#0e0e2e;border:3px solid #3a7a3a;border-radius:8px;padding:18px 14px;max-width:320px;width:92%;display:flex;flex-direction:column;gap:10px}
-#train-title{font-size:11px;color:#88ee88;text-align:center}
-#train-cur-stats{font-size:7px;color:#8899bb;text-align:center;line-height:2}
-#train-cards{display:flex;gap:8px}
-.train-card{flex:1;background:#121230;border:2px solid #2a4a2a;border-radius:6px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
-.train-card-icon{font-size:24px}
-.train-card-name{font-size:6px;color:#88dd88}
-.train-card-lvl{font-size:8px;color:#ffcc00}
-.train-card-desc{font-size:5px;color:#8899aa;line-height:1.8}
-.train-card-cost{font-size:7px;color:#ffd700}
-.train-card-btn{font-family:'Press Start 2P',monospace;background:#1a3a1a;border:2px solid #4a9a4a;color:#88ee88;font-size:5px;padding:5px 8px;cursor:pointer;border-radius:3px;width:100%}
-.train-card-btn:hover{background:#2a5a2a}
-.train-card-btn:disabled{opacity:0.4;cursor:default}
-.train-card-btn.maxed{background:#2a2a2a;border-color:#555;color:#777}
-#train-close{font-family:'Press Start 2P',monospace;background:#2a1a1a;border:2px solid #7a3a3a;color:#dd8888;font-size:7px;padding:8px;cursor:pointer;border-radius:4px}
-#train-close:hover{background:#3a2a2a}
+#lobby-btn{font-family:'Press Start 2P',monospace;background:#1a0e0e;border:3px solid #7a3a3a;color:#dd8888;font-size:9px;padding:10px;cursor:pointer;border-radius:4px;transition:background 0.1s;margin-top:2px}
+#lobby-btn:hover{background:#2a1818}
 
 /* ── TOOLTIP ── */
 #tooltip{position:fixed;background:#0c0c2e;border:2px solid #4a4aae;border-radius:5px;padding:10px;max-width:200px;z-index:300;pointer-events:none}
@@ -170,22 +226,90 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
 <body>
 <div id="game">
 
-<!-- ══ START SCREEN ══ -->
-<div id="start-screen">
-  <div style="font-size:52px;filter:drop-shadow(0 0 20px #ffaa0055)">⚔️</div>
-  <h1>ITEMS<br>BATTLE</h1>
-  <div class="start-stats" id="start-perm-stats">
-    <div class="start-stat"><span>❤️</span><span id="s-hp">+0</span></div>
-    <div class="start-stat"><span>⚔️</span><span id="s-atk">+0%</span></div>
-    <div class="start-stat"><span>🛡️</span><span id="s-blk">+0</span></div>
+<!-- ══ HERO SELECT PAGE ══ -->
+<div id="page-hero-select" class="page">
+  <div class="hs-header">
+    <div class="hs-title">⚔️ ITEMS BATTLE</div>
+    <div class="hs-sub">Escolha seu herói para começar</div>
   </div>
-  <p>Compre itens, monte seu grid e explore sinergias para derrotar inimigos cada vez mais fortes!</p>
-  <button class="big-btn" id="start-btn" onclick="startGame()">▶ JOGAR</button>
-  <div style="font-size:6px;color:#445566">Moedas perm. acumuladas: <span id="s-coins" style="color:#ffd700">0</span> 🪙</div>
+  <div class="hs-scroll" id="hero-cards-container"></div>
+  <div class="hs-confirm-wrap">
+    <button class="hs-confirm-btn" id="hs-confirm-btn" onclick="confirmHero()" disabled>CONFIRMAR HERÓI</button>
+  </div>
 </div>
 
-<!-- ══ MAIN GAME ══ -->
-<div id="main-game" class="gone">
+<!-- ══ LOBBY PAGE ══ -->
+<div id="page-lobby" class="page">
+  <div class="lobby-topbar">
+    <div class="lobby-hero-left">
+      <button class="lobby-change-btn" onclick="showPage('page-hero-select');buildHeroSelectCards()">↩ TROCAR</button>
+      <span class="lobby-hero-name-top" id="lobby-hero-name">Guerreiro</span>
+    </div>
+    <div class="lobby-meta-gold" id="lobby-meta-gold">💰 0</div>
+  </div>
+  <div class="dungeon-banner">
+    <div class="dungeon-banner-icon">🌲</div>
+    <div>
+      <div class="dungeon-banner-text">FLORESTA DENSA</div>
+      <div class="dungeon-banner-best" id="lobby-best-round">Melhor Rodada: 0/8</div>
+    </div>
+  </div>
+  <div class="hero-platform-wrap">
+    <div class="hero-platform" id="hero-platform">
+      <div class="hero-platform-emoji" id="lobby-hero-emoji">🛡️</div>
+      <div class="hero-platform-shadow" id="hero-platform-shadow"></div>
+    </div>
+    <div class="hero-platform-name" id="lobby-hero-name-big">Guerreiro</div>
+    <div class="hero-platform-passive" id="lobby-hero-passive">Itens de defesa têm +30% de eficácia e bloqueio.</div>
+  </div>
+  <div class="hero-stats-row">
+    <div class="stat-chip" id="lobby-stat-hp">❤️ 420</div>
+    <div class="stat-chip" id="lobby-stat-atk">⚔️ +0%</div>
+    <div class="stat-chip" id="lobby-stat-def">🛡️ +0</div>
+  </div>
+  <div class="start-battle-wrap">
+    <button class="start-battle-btn" onclick="startNewRun()">⚔️ INICIAR BATALHA</button>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-tab active" onclick="showPage('page-lobby');updateLobbyUI()">
+      <span class="nav-tab-icon">🏛️</span>LOBBY
+    </button>
+    <button class="nav-tab" onclick="showPage('page-training');renderTrainingPage()">
+      <span class="nav-tab-icon">🏋️</span>TREINAR
+    </button>
+  </nav>
+</div>
+
+<!-- ══ TRAINING PAGE ══ -->
+<div id="page-training" class="page">
+  <div class="train-topbar">
+    <div class="train-topbar-title">🏋️ TREINAMENTO</div>
+    <div class="train-topbar-gold" id="training-meta-gold">💰 0</div>
+  </div>
+  <div class="prestige-section">
+    <div class="prestige-label" id="prestige-wins-label">Combates Vencidos: 0</div>
+    <div class="prestige-bar-area">
+      <div class="prestige-milestones-left" id="prestige-left"></div>
+      <div class="prestige-bar-track">
+        <div class="prestige-bar-fill" id="prestige-bar-fill" style="height:0%"></div>
+        <div class="prestige-bar-dot" id="prestige-bar-dot" style="bottom:0%"></div>
+      </div>
+      <div class="prestige-milestones-right" id="prestige-right"></div>
+    </div>
+  </div>
+  <div class="upgrade-cards" id="upgrade-cards-container"></div>
+  <nav class="bottom-nav">
+    <button class="nav-tab" onclick="showPage('page-lobby');updateLobbyUI()">
+      <span class="nav-tab-icon">🏛️</span>LOBBY
+    </button>
+    <button class="nav-tab active" onclick="showPage('page-training');renderTrainingPage()">
+      <span class="nav-tab-icon">🏋️</span>TREINAR
+    </button>
+  </nav>
+</div>
+
+<!-- ══ GAME PAGE ══ -->
+<div id="page-game" class="page" style="flex-direction:column">
   <div id="top-bar">
     <div id="round-info">RODADA 1/8</div>
     <div id="round-dots"></div>
@@ -239,7 +363,6 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
     <div id="shop-header">
       <div id="shop-left">
         <div id="shop-title">🏪 LOJA</div>
-        <button id="train-btn" onclick="openTrain()">🏋️ TREINAR</button>
       </div>
       <button id="reroll-btn" onclick="rerollShop()">🔄 1🪙</button>
     </div>
@@ -252,23 +375,6 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
   </div>
 </div>
 
-<!-- ══ GAME OVER ══ -->
-<div id="gameover-screen" class="hidden">
-  <div style="font-size:44px">💀</div>
-  <h1>DERROTA!</h1>
-  <div class="final-stats" id="go-stats"></div>
-  <p style="font-size:7px;color:#666688">Suas melhorias permanentes foram mantidas.</p>
-  <button class="big-btn" id="restart-btn" onclick="restartGame()">🔄 JOGAR NOVAMENTE</button>
-</div>
-
-<!-- ══ WIN ══ -->
-<div id="win-screen" class="hidden">
-  <div style="font-size:44px">🏆</div>
-  <h1>VITÓRIA!<br><span style="color:#88eeaa;font-size:14px">Dragão Derrotado!</span></h1>
-  <div class="final-stats" id="win-stats"></div>
-  <button class="big-btn" id="restart-btn2" onclick="restartGame()">🔄 JOGAR NOVAMENTE</button>
-</div>
-
 <!-- ══ RESULT OVERLAY ══ -->
 <div id="result-overlay" class="hidden">
   <div id="result-modal">
@@ -276,19 +382,11 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
     <div id="result-stars"></div>
     <div id="result-enemy"></div>
     <div id="result-reward"></div>
+    <div id="result-meta-reward"></div>
     <hr id="result-divider">
     <div id="result-stats"></div>
     <button id="next-btn" onclick="afterBattle()">CONTINUAR ▶</button>
-  </div>
-</div>
-
-<!-- ══ TRAINING MODAL ══ -->
-<div id="train-overlay" class="hidden">
-  <div id="train-modal">
-    <div id="train-title">🏋️ TREINAMENTO</div>
-    <div id="train-cur-stats"></div>
-    <div id="train-cards"></div>
-    <button id="train-close" onclick="closeTrain()">✕ FECHAR</button>
+    <button id="lobby-btn" onclick="goToLobby()" class="hidden">🏛️ VOLTAR AO LOBBY</button>
   </div>
 </div>
 
@@ -297,6 +395,249 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
 
 </div>
 <script>
+// ═══════════════════════════════════════════════════════
+// HEROES
+// ═══════════════════════════════════════════════════════
+const HEROES = {
+  warrior: {
+    id:'warrior', name:'Guerreiro', emoji:'🛡️', color:'#4488ff',
+    baseHp:420,
+    passive:'Itens de defesa têm +30% de eficácia e bloqueio.',
+    strengths:['Defesa','HP Alto'], weaknesses:['Velocidade Baixa'],
+    stats:{hp:85,atk:40,spd:25},
+    effect:{defBonus:30, baseHp:420}
+  },
+  assassin: {
+    id:'assassin', name:'Assassino', emoji:'🗡️', color:'#ff4488',
+    baseHp:210,
+    passive:'Todos os itens de ataque ativam 35% mais rápido.',
+    strengths:['Velocidade','Combo'], weaknesses:['HP Baixo','Sem Defesa'],
+    stats:{hp:30,atk:80,spd:95},
+    effect:{globalSpeedBonus:35, baseHp:210}
+  },
+  mage: {
+    id:'mage', name:'Mago', emoji:'🧙', color:'#aa44ff',
+    baseHp:270,
+    passive:'Itens mágicos causam +40% de dano e ignoram defesa plana.',
+    strengths:['Dano Mágico'], weaknesses:['Frágil'],
+    stats:{hp:45,atk:90,spd:50},
+    effect:{magicBonus:40, baseHp:270}
+  },
+  ranger: {
+    id:'ranger', name:'Arqueiro', emoji:'🏹', color:'#44ff88',
+    baseHp:300,
+    passive:'Arco e Adaga causam +30% de dano e velocidade.',
+    strengths:['Ranged','Velocidade'], weaknesses:['Corpo a corpo'],
+    stats:{hp:55,atk:70,spd:75},
+    effect:{rangedBonus:30, baseHp:300}
+  },
+  druid: {
+    id:'druid', name:'Druida', emoji:'🌿', color:'#44ffcc',
+    baseHp:370,
+    passive:'Companheiros e poções têm +60% de eficácia.',
+    strengths:['Cura','Companheiros'], weaknesses:['Dano Baixo'],
+    stats:{hp:75,atk:35,spd:45},
+    effect:{companionBonus:60, healBonus:60, baseHp:370}
+  },
+};
+
+// ═══════════════════════════════════════════════════════
+// META (localStorage "ib_meta")
+// ═══════════════════════════════════════════════════════
+let meta = {heroId:'warrior', gold:0, wins:0, bestRound:0, upgrades:{hp:0,atk:0,block:0}};
+
+function loadMeta() {
+  try {
+    const d = JSON.parse(localStorage.getItem('ib_meta') || '{}');
+    meta = {
+      heroId:    d.heroId    || 'warrior',
+      gold:      d.gold      || 0,
+      wins:      d.wins      || 0,
+      bestRound: d.bestRound || 0,
+      upgrades: {
+        hp:    (d.upgrades && d.upgrades.hp)    || 0,
+        atk:   (d.upgrades && d.upgrades.atk)   || 0,
+        block: (d.upgrades && d.upgrades.block)  || 0,
+      }
+    };
+  } catch { meta = {heroId:'warrior',gold:0,wins:0,bestRound:0,upgrades:{hp:0,atk:0,block:0}}; }
+}
+function saveMeta() { localStorage.setItem('ib_meta', JSON.stringify(meta)); }
+
+// ── Meta upgrade defs ──
+const META_UPGRADES = {
+  hp:    {icon:'❤️', name:'Vitalidade', perLevel:25, baseCost:30, levelCostMul:15, max:10, statLabel:'HP'},
+  atk:   {icon:'⚔️', name:'Ataque',     perLevel:6,  baseCost:30, levelCostMul:15, max:10, statLabel:'ATK %'},
+  block: {icon:'🛡️', name:'Defesa',     perLevel:4,  baseCost:30, levelCostMul:15, max:10, statLabel:'DEF'},
+};
+
+function metaHpBonus()    { return meta.upgrades.hp    * META_UPGRADES.hp.perLevel; }
+function metaAtkBonus()   { return meta.upgrades.atk   * META_UPGRADES.atk.perLevel / 100; }
+function metaBlockBonus() { return meta.upgrades.block * META_UPGRADES.block.perLevel; }
+function metaUpgradeCost(key) {
+  const d = META_UPGRADES[key];
+  return d.baseCost + meta.upgrades[key] * d.levelCostMul;
+}
+
+// ═══════════════════════════════════════════════════════
+// PAGE SYSTEM
+// ═══════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// HERO SELECT
+// ═══════════════════════════════════════════════════════
+let selectedHeroId = null;
+
+function buildHeroSelectCards() {
+  selectedHeroId = meta.heroId;
+  const container = document.getElementById('hero-cards-container');
+  container.innerHTML = '';
+  for (const [hid, hero] of Object.entries(HEROES)) {
+    const card = document.createElement('div');
+    card.className = 'hero-card' + (hid === selectedHeroId ? ' selected' : '');
+    card.style.setProperty('--hcolor', hero.color);
+    const strChips = hero.strengths.map(s=>`<span class="chip-str">${s}</span>`).join('');
+    const wkChips  = hero.weaknesses.map(w=>`<span class="chip-weak">${w}</span>`).join('');
+    card.innerHTML = `
+      <div class="hero-card-emoji">${hero.emoji}</div>
+      <div class="hero-card-name">${hero.name}</div>
+      <div class="hero-card-passive">${hero.passive}</div>
+      <div class="hero-stat-bars">
+        <div class="hero-stat-row"><span class="hero-stat-label">❤️ HP</span><div class="hero-stat-bg"><div class="hero-stat-fill" style="width:${hero.stats.hp}%;background:#ff5555"></div></div></div>
+        <div class="hero-stat-row"><span class="hero-stat-label">⚔️ ATK</span><div class="hero-stat-bg"><div class="hero-stat-fill" style="width:${hero.stats.atk}%;background:#ffaa44"></div></div></div>
+        <div class="hero-stat-row"><span class="hero-stat-label">💨 SPD</span><div class="hero-stat-bg"><div class="hero-stat-fill" style="width:${hero.stats.spd}%;background:#44ffaa"></div></div></div>
+      </div>
+      <div class="hero-chips">${strChips}${wkChips}</div>`;
+    card.addEventListener('click', () => {
+      selectedHeroId = hid;
+      container.querySelectorAll('.hero-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      document.getElementById('hs-confirm-btn').disabled = false;
+    });
+    container.appendChild(card);
+  }
+  document.getElementById('hs-confirm-btn').disabled = false;
+}
+
+function confirmHero() {
+  if (!selectedHeroId) return;
+  meta.heroId = selectedHeroId;
+  saveMeta();
+  updateLobbyUI();
+  showPage('page-lobby');
+}
+
+// ═══════════════════════════════════════════════════════
+// LOBBY UI
+// ═══════════════════════════════════════════════════════
+function updateLobbyUI() {
+  const hero = HEROES[meta.heroId] || HEROES.warrior;
+  document.getElementById('lobby-hero-name').textContent = hero.name;
+  document.getElementById('lobby-meta-gold').textContent = `💰 ${meta.gold}`;
+  document.getElementById('lobby-best-round').textContent = `Melhor Rodada: ${meta.bestRound}/8`;
+  document.getElementById('lobby-hero-emoji').textContent = hero.emoji;
+  document.getElementById('lobby-hero-name-big').textContent = hero.name;
+  document.getElementById('lobby-hero-passive').textContent = hero.passive;
+
+  // Apply hero color to platform elements via CSS custom property
+  const emojiEl = document.getElementById('lobby-hero-emoji');
+  const shadowEl = document.getElementById('hero-platform-shadow');
+  emojiEl.style.setProperty('--hcolor', hero.color);
+  shadowEl.style.setProperty('--hcolor', hero.color);
+
+  const totalHp = (hero.effect.baseHp || 300) + metaHpBonus();
+  const atkBonus = Math.round(metaAtkBonus() * 100);
+  const defBonus = metaBlockBonus();
+  document.getElementById('lobby-stat-hp').textContent = `❤️ ${totalHp}`;
+  document.getElementById('lobby-stat-atk').textContent = `⚔️ +${atkBonus}%`;
+  document.getElementById('lobby-stat-def').textContent = `🛡️ +${defBonus}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// TRAINING PAGE
+// ═══════════════════════════════════════════════════════
+const PRESTIGE_MILESTONES = [
+  {wins:0,  label:'0',  reward:'Início'},
+  {wins:5,  label:'5',  reward:'💰 50'},
+  {wins:10, label:'10', reward:'💰 100'},
+  {wins:20, label:'20', reward:'💰 200'},
+  {wins:30, label:'30', reward:'💰 300'},
+];
+
+function renderTrainingPage() {
+  document.getElementById('training-meta-gold').textContent = `💰 ${meta.gold}`;
+  document.getElementById('prestige-wins-label').textContent = `Combates Vencidos: ${meta.wins}`;
+
+  // Prestige bar progress
+  const maxWins = 30;
+  const pct = Math.min(1, meta.wins / maxWins);
+  document.getElementById('prestige-bar-fill').style.height = (pct * 100) + '%';
+  document.getElementById('prestige-bar-dot').style.bottom = (pct * 100) + '%';
+
+  // Milestone labels — reversed so highest milestone is at top
+  const leftEl = document.getElementById('prestige-left');
+  const rightEl = document.getElementById('prestige-right');
+  leftEl.innerHTML = '';
+  rightEl.innerHTML = '';
+  const reversed = [...PRESTIGE_MILESTONES].reverse();
+  for (const m of reversed) {
+    const lbl = document.createElement('div');
+    lbl.className = 'prestige-milestone-label';
+    lbl.textContent = m.label;
+    leftEl.appendChild(lbl);
+    const rwd = document.createElement('div');
+    rwd.className = 'prestige-reward-badge';
+    rwd.textContent = m.reward;
+    rightEl.appendChild(rwd);
+  }
+
+  // Upgrade cards
+  const container = document.getElementById('upgrade-cards-container');
+  container.innerHTML = '';
+  for (const [key, def] of Object.entries(META_UPGRADES)) {
+    const lvl = meta.upgrades[key];
+    const cost = metaUpgradeCost(key);
+    const nextVal = (lvl + 1) * def.perLevel;
+    const maxed = lvl >= def.max;
+    const canAfford = meta.gold >= cost;
+
+    const card = document.createElement('div');
+    card.className = 'upgrade-card';
+    card.innerHTML = `
+      <div class="upgrade-card-icon">${def.icon}</div>
+      <div class="upgrade-card-lvl">LV.${lvl}</div>
+      <div class="upgrade-card-name">${def.name}</div>
+      <div class="upgrade-card-desc">+${maxed ? lvl*def.perLevel : nextVal} ${def.statLabel}</div>
+      <div class="upgrade-card-cost">${maxed ? '—' : '💰 ' + cost}</div>
+      <button class="upgrade-card-btn${maxed?' maxed':''}" ${maxed||!canAfford?'disabled':''} onclick="buyMetaUpgrade('${key}')">
+        ${maxed ? 'MAX' : 'MELHORAR'}
+      </button>`;
+    container.appendChild(card);
+  }
+}
+
+function buyMetaUpgrade(key) {
+  const def = META_UPGRADES[key];
+  const lvl = meta.upgrades[key];
+  if (lvl >= def.max) return;
+  const cost = metaUpgradeCost(key);
+  if (meta.gold < cost) {
+    const el = document.getElementById('training-meta-gold');
+    const c = el.style.color; el.style.color='#ff4444';
+    setTimeout(()=>el.style.color=c, 320);
+    return;
+  }
+  meta.gold -= cost;
+  meta.upgrades[key]++;
+  saveMeta();
+  renderTrainingPage();
+}
+
 // ═══════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════
@@ -320,7 +661,6 @@ const ITEMS = {
   wolf:     {id:'wolf',    name:'Lobo Feroz',       icon:'🐺',  type:'companion',rarity:'rare',     damage:48, cd:3.0, cost:7, desc:'O lobo ataca por {damage} de dano a cada {cd}s.'},
 };
 
-// Synergy rules: pair of item ids → bonus applied to that battle
 const SYNERGIES = [
   {ids:['sword','sword'],    name:'Duelo',           color:'#4488ff', desc:'+20% dano',               bonus:{dmgPct:20}},
   {ids:['sword','dagger'],   name:'Combo Veloz',     color:'#77ccff', desc:'+15% velocidade',          bonus:{speedPct:15}},
@@ -358,21 +698,13 @@ const WAVES = [
 ];
 const ENEMY_POSITIONS = [2,7,6,11,12,1,16,3];
 
-// Permanent upgrade definitions
-const PERM_DEFS = {
-  hp:    {name:'PV',       icon:'❤️', desc:'+{v} HP máximo',      perLevel:20,  baseCost:25, maxLevel:15},
-  atk:   {name:'ATQ',     icon:'⚔️', desc:'+{v}% dano global',    perLevel:5,   baseCost:25, maxLevel:10},
-  block: {name:'Defesa',  icon:'🛡️', desc:'+{v} redução de dano', perLevel:3,   baseCost:25, maxLevel:10},
-};
-
 // ═══════════════════════════════════════════════════════
-// STATE
+// GAME STATE
 // ═══════════════════════════════════════════════════════
 let G = {};
 let battleRAF = null;
 let lastTick = 0;
 let dragSrc = null;
-let perm = loadPerm(); // permanent upgrades
 
 function newGame() {
   return {
@@ -383,20 +715,6 @@ function newGame() {
     runStats:{dmgDealt:0, dmgTaken:0, kills:0},
   };
 }
-
-// ═══════════════════════════════════════════════════════
-// PERM UPGRADES (localStorage)
-// ═══════════════════════════════════════════════════════
-function loadPerm() {
-  try {
-    const d = JSON.parse(localStorage.getItem('ib_perm') || '{}');
-    return {hp: d.hp||0, atk: d.atk||0, block: d.block||0, coins: d.coins||0};
-  } catch { return {hp:0, atk:0, block:0, coins:0}; }
-}
-function savePerm() { localStorage.setItem('ib_perm', JSON.stringify(perm)); }
-function permHpBonus()    { return perm.hp    * PERM_DEFS.hp.perLevel; }
-function permAtkBonus()   { return perm.atk   * PERM_DEFS.atk.perLevel / 100; }
-function permBlockBonus() { return perm.block * PERM_DEFS.block.perLevel; }
 
 // ═══════════════════════════════════════════════════════
 // SYNERGY HELPERS
@@ -443,7 +761,6 @@ function drawSynergyLines(gridElId, grid) {
   const pairs = getSynPairs(grid);
   if (!pairs.length) return;
 
-  // Build using requestAnimationFrame so layout is settled
   requestAnimationFrame(() => {
     const cells = [...gridEl.querySelectorAll('.grid-cell')];
     const gr = gridEl.getBoundingClientRect();
@@ -479,7 +796,6 @@ function drawSynergyLines(gridElId, grid) {
     }
     gridEl.appendChild(svg);
 
-    // Highlight synergizing cells
     const synCells = new Set(pairs.flatMap(({i,j}) => [i,j]));
     cells.forEach((c,idx) => c.classList.toggle('syn-item', synCells.has(idx)));
   });
@@ -490,7 +806,6 @@ function renderSynPanel(grid) {
   const pairs = getSynPairs(grid);
   if (!pairs.length) { panel.innerHTML = ''; return; }
 
-  // Deduplicate by syn name
   const seen = new Set();
   const chips = [];
   for (const {syn} of pairs) {
@@ -503,30 +818,20 @@ function renderSynPanel(grid) {
 }
 
 // ═══════════════════════════════════════════════════════
-// BOOT
+// START NEW RUN
 // ═══════════════════════════════════════════════════════
-function startGame() {
-  perm = loadPerm();
+function startNewRun() {
+  if (battleRAF) { cancelAnimationFrame(battleRAF); battleRAF = null; }
   G = newGame();
-  document.getElementById('start-screen').classList.add('hidden');
-  document.getElementById('main-game').classList.remove('gone');
+  showPage('page-game');
   enterShop();
 }
 
-function restartGame() {
+function goToLobby() {
+  document.getElementById('result-overlay').classList.add('hidden');
   if (battleRAF) { cancelAnimationFrame(battleRAF); battleRAF = null; }
-  ['gameover-screen','win-screen'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  document.getElementById('main-game').classList.add('gone');
-  updateStartScreen();
-  document.getElementById('start-screen').classList.remove('hidden');
-}
-
-function updateStartScreen() {
-  perm = loadPerm();
-  document.getElementById('s-hp').textContent   = `+${permHpBonus()}`;
-  document.getElementById('s-atk').textContent  = `+${perm.atk * PERM_DEFS.atk.perLevel}%`;
-  document.getElementById('s-blk').textContent  = `+${permBlockBonus()}`;
-  document.getElementById('s-coins').textContent = perm.coins;
+  updateLobbyUI();
+  showPage('page-lobby');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -535,7 +840,7 @@ function updateStartScreen() {
 function enterShop() {
   G.phase = 'shop';
   G.round++;
-  if (G.round > WAVES.length) { showWin(); return; }
+  if (G.round > WAVES.length) { showFinalWin(); return; }
 
   const wave = WAVES[G.round-1];
   G.enemy = {
@@ -543,7 +848,6 @@ function enterShop() {
     items: wave.items.map(id => ({...ITEMS[id]})),
     gridMap: buildEnemyGridMap(wave.items.map(id => ({...ITEMS[id]})))
   };
-  // 4 shop slots from round 3+
   G.shopSlots = new Array(G.round >= 3 ? 4 : 3).fill(null);
   generateShop();
   renderAll();
@@ -735,87 +1039,45 @@ function sellDrop(e) {
 }
 
 // ═══════════════════════════════════════════════════════
-// TRAINING MODAL
-// ═══════════════════════════════════════════════════════
-function openTrain() {
-  renderTrain();
-  document.getElementById('train-overlay').classList.remove('hidden');
-}
-function closeTrain() {
-  document.getElementById('train-overlay').classList.add('hidden');
-}
-function renderTrain() {
-  const curHp  = 300 + permHpBonus();
-  const curAtk = perm.atk * PERM_DEFS.atk.perLevel;
-  const curBlk = permBlockBonus();
-  document.getElementById('train-cur-stats').innerHTML =
-    `❤️ ${curHp} HP &nbsp; ⚔️ +${curAtk}% ATQ &nbsp; 🛡️ +${curBlk} DEF<br>🪙 ${G.coins} moedas disponíveis`;
-
-  const cards = document.getElementById('train-cards');
-  cards.innerHTML = '';
-  for (const [key, def] of Object.entries(PERM_DEFS)) {
-    const lvl  = perm[key];
-    const cost = def.baseCost + lvl*10;
-    const val  = (lvl+1)*def.perLevel;
-    const maxed = lvl >= def.maxLevel;
-    const canAfford = G.coins >= cost;
-
-    const card = document.createElement('div');
-    card.className = 'train-card';
-    card.innerHTML = `
-      <div class="train-card-icon">${def.icon}</div>
-      <div class="train-card-name">${def.name}</div>
-      <div class="train-card-lvl">Nv.${lvl}</div>
-      <div class="train-card-desc">${def.desc.replace('{v}', val)}</div>
-      <div class="train-card-cost">${maxed ? '—' : cost+'🪙'}</div>
-      <button class="train-card-btn${maxed?' maxed':''}" ${maxed||!canAfford?'disabled':''} onclick="buyUpgrade('${key}')">
-        ${maxed ? 'MAX' : 'MELHORAR'}
-      </button>`;
-    cards.appendChild(card);
-  }
-}
-function buyUpgrade(key) {
-  const def  = PERM_DEFS[key];
-  const lvl  = perm[key];
-  if (lvl >= def.maxLevel) return;
-  const cost = def.baseCost + lvl*10;
-  if (G.coins < cost) { flashEl('coins-display'); return; }
-  G.coins -= cost;
-  perm[key]++;
-  savePerm();
-  renderTopBar(); renderTrain();
-}
-
-// ═══════════════════════════════════════════════════════
 // BATTLE PHASE
 // ═══════════════════════════════════════════════════════
 function startBattle() {
   G.phase = 'battle';
+  const hero = HEROES[meta.heroId] || HEROES.warrior;
+  const heff = hero.effect;
   const pg = G.playerGrid.filter(Boolean);
   const syn = computeSynBonuses(G.playerGrid);
 
-  // Player stats (items + synergies + perm)
-  const speedPct    = pg.filter(i=>i.id==='boots').reduce((s,i)=>s+i.speedBonus,0)/100 + syn.speedPct/100;
-  const dmgBonusPct = pg.filter(i=>i.id==='ring').reduce((s,i)=>s+i.dmgBonus,0)/100 + syn.dmgPct/100 + permAtkBonus();
-  const maxHpBonus  = pg.filter(i=>i.id==='amulet').reduce((s,i)=>s+i.maxHpBonus,0);
-  const healAmt     = pg.filter(i=>i.id==='potion').reduce((s,i)=>s+i.healAmt,0) + syn.extraHeal;
-  const playerMaxHp = Math.round((300 + maxHpBonus + permHpBonus()) * (1 + syn.hpPct/100));
-  const playerHp    = Math.min(playerMaxHp, playerMaxHp + healAmt);
+  // Base HP from hero + training upgrades + amulets + synergies
+  const maxHpBonus = pg.filter(i=>i.id==='amulet').reduce((s,i)=>s+i.maxHpBonus,0);
+  const playerMaxHp = Math.round(((heff.baseHp || 300) + maxHpBonus + metaHpBonus()) * (1 + syn.hpPct/100));
 
-  // Extra defense from synergies + perm
-  const extraBlockBonus    = syn.blockBonus;
-  const extraFlatReduce    = syn.flatReduceBonus + permBlockBonus();
+  // Speed bonuses
+  let speedPct = pg.filter(i=>i.id==='boots').reduce((s,i)=>s+i.speedBonus,0)/100 + syn.speedPct/100;
+  // Assassin: +35% global speed on all attackers
+  if (heff.globalSpeedBonus) speedPct += heff.globalSpeedBonus / 100;
+
+  // Global damage bonus from rings + synergies + meta training
+  let dmgBonusPct = pg.filter(i=>i.id==='ring').reduce((s,i)=>s+i.dmgBonus,0)/100 + syn.dmgPct/100 + metaAtkBonus();
+
+  // Healing
+  let healAmt = pg.filter(i=>i.id==='potion').reduce((s,i)=>s+i.healAmt,0) + syn.extraHeal;
+  // Druid: +60% heal
+  if (heff.healBonus) healAmt = Math.round(healAmt * (1 + heff.healBonus/100));
+  const playerHp = Math.min(playerMaxHp, playerMaxHp + healAmt);
+
+  // Defense bonuses
+  const extraBlockBonus = syn.blockBonus;
+  const extraFlatReduce = syn.flatReduceBonus + metaBlockBonus();
 
   // Enemy stats
   const eg = G.enemy.items;
-  const eSpeedPct  = eg.filter(i=>i.id==='boots').reduce((s,i)=>s+i.speedBonus,0)/100;
-  const eDmgBonus  = eg.filter(i=>i.id==='ring').reduce((s,i)=>s+i.dmgBonus,0)/100;
+  const eSpeedPct = eg.filter(i=>i.id==='boots').reduce((s,i)=>s+i.speedBonus,0)/100;
+  const eDmgBonus = eg.filter(i=>i.id==='ring').reduce((s,i)=>s+i.dmgBonus,0)/100;
 
-  const makeAttackers = (items, sp, db, startPrefix) =>
-    items.filter(i=>i.type==='attack'||i.type==='companion')
-         .map(item => { const t=item.cd/(1+sp); return {...item,_timer:t,_maxTimer:t,_dmgBonus:db}; });
+  const enemyAttackers = eg.filter(i=>i.type==='attack'||i.type==='companion')
+    .map(item => { const t=item.cd/(1+eSpeedPct); return {...item,_timer:t,_maxTimer:t,_dmgBonus:eDmgBonus}; });
 
-  const enemyAttackers = makeAttackers(eg, eSpeedPct, eDmgBonus);
   const egm = [...G.enemy.gridMap];
   enemyAttackers.forEach(att => {
     const pos = egm.findIndex(c=>c&&c.id===att.id&&c._timer===undefined);
@@ -825,21 +1087,47 @@ function startBattle() {
   const playerAttackers = [];
   const pgm = G.playerGrid.map((item,idx) => {
     if (!item||(item.type!=='attack'&&item.type!=='companion')) return item;
-    const t = item.cd/(1+speedPct);
-    const att = {...item, _timer:t, _maxTimer:t, _dmgBonus:dmgBonusPct, _gridIdx:idx};
+
+    // Per-item speed and damage bonuses from hero
+    let itemSp = speedPct;
+    let itemDb = dmgBonusPct;
+
+    // Ranger: bow + dagger get +30% damage and speed
+    if (heff.rangedBonus && (item.id==='bow'||item.id==='dagger')) {
+      itemSp += heff.rangedBonus / 100;
+      itemDb += heff.rangedBonus / 100;
+    }
+    // Mage: magical items get +40% damage (and ignore flat defense, handled in computeDmg)
+    if (heff.magicBonus && item.magical) {
+      itemDb += heff.magicBonus / 100;
+    }
+    // Druid: companion items get +60% damage
+    if (heff.companionBonus && item.type==='companion') {
+      itemDb += heff.companionBonus / 100;
+    }
+
+    const t = item.cd / (1 + itemSp);
+    const att = {...item, _timer:t, _maxTimer:t, _dmgBonus:itemDb, _gridIdx:idx};
     playerAttackers.push(att);
     return att;
   });
 
-  // Build effective defense arrays (with synergy bonuses applied)
-  const playerDefense = pg.filter(i=>i.type==='defense').map(d => ({
-    ...d,
-    blockChance: (d.blockChance||0) + extraBlockBonus,
-    flatReduce:  (d.flatReduce||0) + extraFlatReduce,
-  }));
-  // If perm block > 0 but no defense items, add a passive
+  // Warrior: defense items get +30% effectiveness
+  const playerDefense = pg.filter(i=>i.type==='defense').map(d => {
+    let bc = (d.blockChance||0) + extraBlockBonus;
+    let fr = (d.flatReduce||0) + extraFlatReduce;
+    let ba = d.blockAmt||0;
+    if (heff.defBonus) {
+      bc = Math.round(bc * (1 + heff.defBonus/100));
+      fr = Math.round(fr * (1 + heff.defBonus/100));
+      ba = Math.round(ba * (1 + heff.defBonus/100));
+    }
+    return {...d, blockChance:bc, flatReduce:fr, blockAmt:ba};
+  });
   if (playerDefense.length===0 && extraFlatReduce>0) {
-    playerDefense.push({id:'_perm',blockChance:0,flatReduce:extraFlatReduce});
+    let fr = extraFlatReduce;
+    if (heff.defBonus) fr = Math.round(fr * (1 + heff.defBonus/100));
+    playerDefense.push({id:'_perm',blockChance:0,flatReduce:fr});
   }
 
   G.battle = {
@@ -852,6 +1140,10 @@ function startBattle() {
     totalPlayerDmg:0, totalEnemyDmg:0,
   };
 
+  // Update player display to hero
+  document.getElementById('player-name').textContent  = hero.name;
+  document.getElementById('player-emoji').textContent = hero.emoji;
+
   renderBattleUI();
   lastTick = performance.now();
   battleRAF = requestAnimationFrame(battleLoop);
@@ -861,8 +1153,6 @@ function renderBattleUI() {
   document.getElementById('shop-wrap').classList.add('hidden');
   document.getElementById('enemy-preview-bar').classList.add('hidden');
   document.getElementById('arena').classList.remove('hidden');
-  document.getElementById('player-name').textContent  = 'Herói';
-  document.getElementById('player-emoji').textContent = '🧙';
   document.getElementById('enemy-name-disp').textContent = G.enemy.name;
   document.getElementById('enemy-emoji').textContent  = G.enemy.emoji;
   document.getElementById('round-banner').textContent = `RODADA ${G.round}/${WAVES.length}`;
@@ -872,7 +1162,6 @@ function renderBattleUI() {
   updateHpBars();
   renderGridEl('enemy-grid', G.battle.enemyGridMap, false, false);
   renderGridEl('player-grid', G.battle.playerGridMap, false, false);
-  // Draw synergy lines on player grid in battle too
   drawSynergyLines('player-grid', G.playerGrid);
 }
 
@@ -922,7 +1211,7 @@ function battleLoop(now) {
 function computeDmg(att, defenses) {
   let dmg = att.damage * (1+(att._dmgBonus||0));
   for (const def of defenses) {
-    if (def.blockChance && Math.random()*100 < def.blockChance) dmg *= (1-def.blockAmt/100);
+    if (def.blockChance && Math.random()*100 < def.blockChance) dmg *= (1-(def.blockAmt||0)/100);
     if (!att.magical && def.flatReduce) dmg -= def.flatReduce;
   }
   return Math.max(1, Math.round(dmg));
@@ -987,13 +1276,22 @@ function starsForHp(pct) {
 function endBattle(won) {
   G.lastResult = won;
   const b = G.battle;
-  const overlay = document.getElementById('result-overlay');
   const s = Math.floor(b.time/1000);
+  const nextBtn = document.getElementById('next-btn');
+  const lobbyBtn = document.getElementById('lobby-btn');
 
   if (won) {
     G.runStats.kills++;
     const reward = G.enemy.reward;
     G.coins += reward;
+
+    // Earn meta gold: reward * 4
+    const metaEarned = reward * 4;
+    meta.gold += metaEarned;
+    meta.wins++;
+    if (G.round > meta.bestRound) meta.bestRound = G.round;
+    saveMeta();
+
     const hpPct = Math.round(b.playerHp/b.playerMaxHp*100);
     const stars = starsForHp(hpPct);
     document.getElementById('result-title').textContent = '🏆 VITÓRIA!';
@@ -1001,55 +1299,66 @@ function endBattle(won) {
     document.getElementById('result-stars').textContent = stars;
     document.getElementById('result-enemy').textContent = `${G.enemy.emoji} ${G.enemy.name} derrotado!`;
     document.getElementById('result-reward').textContent = `+${reward} 🪙 recebidos`;
+    document.getElementById('result-meta-reward').textContent = `+${metaEarned} 💰 ouro de meta ganho!`;
     document.getElementById('result-stats').innerHTML =
       `HP restante: ${Math.ceil(b.playerHp)} / ${b.playerMaxHp} (${hpPct}%)<br>` +
       `Dano causado: ${b.totalPlayerDmg}<br>` +
       `Dano recebido: ${b.totalEnemyDmg}<br>` +
       `Tempo: ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-    document.getElementById('next-btn').textContent = G.round>=WAVES.length ? '🏆 VER RESULTADO' : '▶ PRÓXIMA RODADA';
+
+    if (G.round >= WAVES.length) {
+      nextBtn.textContent = '🏆 VER RESULTADO';
+    } else {
+      nextBtn.textContent = '▶ PRÓXIMA RODADA';
+    }
+    nextBtn.classList.remove('hidden');
+    lobbyBtn.classList.add('hidden');
   } else {
+    if (G.round > meta.bestRound) meta.bestRound = G.round;
+    saveMeta();
+
     document.getElementById('result-title').textContent = '💀 DERROTA!';
     document.getElementById('result-title').className = 'lose';
     document.getElementById('result-stars').textContent = '💔';
     document.getElementById('result-enemy').textContent = `${G.enemy.emoji} ${G.enemy.name} te derrotou...`;
     document.getElementById('result-reward').textContent = '';
+    document.getElementById('result-meta-reward').textContent = '';
     document.getElementById('result-stats').innerHTML =
       `HP restante: 0 / ${b.playerMaxHp}<br>` +
       `Dano causado: ${b.totalPlayerDmg}<br>` +
       `Dano recebido: ${b.totalEnemyDmg}<br>` +
       `Tempo: ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-    document.getElementById('next-btn').textContent = '🔄 TENTAR NOVAMENTE';
+    nextBtn.classList.add('hidden');
+    lobbyBtn.classList.remove('hidden');
   }
-  // Save remaining coins to perm pool
-  perm.coins = (perm.coins||0) + G.coins;
-  savePerm();
   renderTopBar();
-  overlay.classList.remove('hidden');
+  document.getElementById('result-overlay').classList.remove('hidden');
 }
 
 function afterBattle() {
   document.getElementById('result-overlay').classList.add('hidden');
-  if (!G.lastResult) { showGameOver(); return; }
-  if (G.round>=WAVES.length) { showWin(); return; }
+  if (!G.lastResult) { goToLobby(); return; }
+  if (G.round >= WAVES.length) { showFinalWin(); return; }
   enterShop();
 }
 
-function buildFinalStats() {
-  return `⚔️ Inimigos derrotados: ${G.runStats.kills}<br>` +
-         `💥 Dano total causado: ${G.runStats.dmgDealt}<br>` +
-         `🩹 Dano total recebido: ${G.runStats.dmgTaken}<br>` +
-         `🪙 Moedas acumuladas: ${perm.coins}`;
-}
-
-function showGameOver() {
-  document.getElementById('main-game').classList.add('gone');
-  document.getElementById('go-stats').innerHTML = buildFinalStats();
-  document.getElementById('gameover-screen').classList.remove('hidden');
-}
-function showWin() {
-  document.getElementById('main-game').classList.add('gone');
-  document.getElementById('win-stats').innerHTML = buildFinalStats();
-  document.getElementById('win-screen').classList.remove('hidden');
+function showFinalWin() {
+  document.getElementById('result-overlay').classList.add('hidden');
+  document.getElementById('result-title').textContent = '🏆 PARABÉNS!';
+  document.getElementById('result-title').className = 'win';
+  document.getElementById('result-stars').textContent = '⭐⭐⭐';
+  document.getElementById('result-enemy').textContent = '🐉 Dragão Antigo derrotado! Você venceu!';
+  document.getElementById('result-reward').textContent = 'Campanha completa!';
+  document.getElementById('result-meta-reward').textContent = '';
+  document.getElementById('result-stats').innerHTML =
+    `⚔️ Inimigos derrotados: ${G.runStats.kills}<br>` +
+    `💥 Dano total causado: ${G.runStats.dmgDealt}<br>` +
+    `🩹 Dano total recebido: ${G.runStats.dmgTaken}`;
+  document.getElementById('next-btn').classList.add('hidden');
+  const lobbyBtn = document.getElementById('lobby-btn');
+  lobbyBtn.textContent = '🏛️ VOLTAR AO LOBBY';
+  lobbyBtn.classList.remove('hidden');
+  document.getElementById('result-overlay').classList.remove('hidden');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1062,7 +1371,6 @@ function addTooltip(el, item) {
 }
 
 function addTooltipShop(el, item) {
-  // For shop items also show possible synergies
   el.addEventListener('mouseenter', e => showTipShop(item, e.clientX, e.clientY));
   el.addEventListener('mousemove',  e => moveTip(e.clientX, e.clientY));
   el.addEventListener('mouseleave', hideTip);
@@ -1081,8 +1389,7 @@ function showTipShop(item, x, y) {
   const tip = document.getElementById('tooltip');
   const desc = fillDesc(item.desc||'', item);
   const typeLabels = {attack:'⚔️ Ataque',defense:'🛡️ Defesa',utility:'✨ Utilidade',companion:'🐾 Companheiro'};
-  // Find possible synergies with items already on grid
-  const inGrid = G.playerGrid.filter(Boolean).map(i=>i.id);
+  const inGrid = G.playerGrid ? G.playerGrid.filter(Boolean).map(i=>i.id) : [];
   const possibleSyns = SYNERGIES
     .filter(s=>(s.ids[0]===item.id && inGrid.includes(s.ids[1])) || (s.ids[1]===item.id && inGrid.includes(s.ids[0])))
     .map(s=>`🔗 ${s.name}: ${s.desc}`).join('<br>');
@@ -1140,8 +1447,18 @@ function showNotice(msg) {
   setTimeout(()=>n.remove(), 1800);
 }
 
-// Init start screen on load
-updateStartScreen();
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+loadMeta();
+// If meta has a valid hero, go directly to lobby; otherwise show hero select
+if (meta.heroId && HEROES[meta.heroId]) {
+  updateLobbyUI();
+  showPage('page-lobby');
+} else {
+  buildHeroSelectCards();
+  showPage('page-hero-select');
+}
 </script>
 </body>
 </html>
