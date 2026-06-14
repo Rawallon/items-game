@@ -10,6 +10,8 @@
 body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New',monospace;min-height:100vh;display:flex;justify-content:center}
 #game{width:100%;max-width:480px;background:#0d0d23;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
 .hidden{display:none!important}
+#main-game{display:flex;flex-direction:column;min-height:100vh}
+#main-game.gone{display:none}
 
 /* START */
 #start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center;gap:20px}
@@ -141,7 +143,7 @@ body{background:#080818;color:#e0e0ff;font-family:'Press Start 2P','Courier New'
 </div>
 
 <!-- MAIN GAME -->
-<div id="main-game" class="hidden" style="display:flex;flex-direction:column;min-height:100vh">
+<div id="main-game" class="gone">
 
   <!-- Top Bar -->
   <div id="top-bar">
@@ -306,7 +308,7 @@ function newGame() {
 function startGame() {
   G = newGame();
   document.getElementById('start-screen').classList.add('hidden');
-  document.getElementById('main-game').style.display = 'flex';
+  document.getElementById('main-game').classList.remove('gone');
   enterShop();
 }
 
@@ -314,7 +316,7 @@ function restartGame() {
   if (battleRAF) { cancelAnimationFrame(battleRAF); battleRAF = null; }
   document.getElementById('gameover-screen').classList.add('hidden');
   document.getElementById('win-screen').classList.add('hidden');
-  document.getElementById('main-game').style.display = 'none';
+  document.getElementById('main-game').classList.add('gone');
   document.getElementById('start-screen').classList.remove('hidden');
 }
 
@@ -780,13 +782,13 @@ function afterBattle() {
 }
 
 function showGameOver() {
-  document.getElementById('main-game').style.display = 'none';
+  document.getElementById('main-game').classList.add('gone');
   document.getElementById('gameover-screen').classList.remove('hidden');
   document.getElementById('go-round').textContent = `${G.round}/${WAVES.length}`;
 }
 
 function showWin() {
-  document.getElementById('main-game').style.display = 'none';
+  document.getElementById('main-game').classList.add('gone');
   document.getElementById('win-screen').classList.remove('hidden');
 }
 
